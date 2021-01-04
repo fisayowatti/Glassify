@@ -6,6 +6,7 @@ interface ColorItemProps {
 
 class ColorItem extends React.Component<ColorItemProps> {
   render() {
+    const { color } = this.props;
     return (
       <div>
         <div
@@ -13,15 +14,20 @@ class ColorItem extends React.Component<ColorItemProps> {
             height: "50px",
             width: "50px",
             borderRadius: "100%",
-            backgroundColor: this.props["color"],
+            backgroundColor: color,
           }}
         ></div>
+        <p>{color}</p>
       </div>
     );
   }
 }
 
-class SelectBgColor extends React.Component {
+interface SelectBgColorProps {
+  changePage: () => void;
+}
+
+class SelectBgColor extends React.Component<SelectBgColorProps> {
   state = {
     bgLayerSelected: false,
     colorOptions: [],
@@ -43,6 +49,7 @@ class SelectBgColor extends React.Component {
 
   render() {
     const { bgLayerSelected, colorOptions } = this.state;
+    const { changePage } = this.props;
     console.log("colorsyo", colorOptions);
     return (
       <div>
@@ -51,8 +58,24 @@ class SelectBgColor extends React.Component {
           color from the list that comes up
         </p>
         {!bgLayerSelected && <div className="sbc-colors-filler"></div>}
-        {colorOptions.length &&
-          colorOptions.map((color) => <ColorItem color={color} />)}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, 80px)",
+            justifyContent: "center",
+            justifyItems: "center",
+          }}
+        >
+          {colorOptions.length &&
+            colorOptions.map((color) => (
+              <ColorItem key={color} color={color} />
+            ))}
+        </div>
+        <div className="btn-row--alt">
+          <button className="btn--center" onClick={changePage}>
+            Next
+          </button>
+        </div>
       </div>
     );
   }

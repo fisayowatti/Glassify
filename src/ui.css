@@ -9,14 +9,14 @@ button {
   color: black;
   border: none;
   padding: 8px 15px;
-  margin: 0 5px;
+  /* margin: 0 5px; */
   box-shadow: inset 0 0 0 1px black;
   outline: none;
+  cursor: pointer;
 }
 #glassify {
-  box-shadow: none;
-  background: #18a0fb;
   color: white;
+  text-transform: uppercase;
 }
 .input {
   border: none;
@@ -49,7 +49,7 @@ button:focus {
 }
 
 .heading-2 {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 300;
   color: #000;
 }
@@ -59,13 +59,15 @@ button:focus {
   grid-template-columns: max-content 1fr;
   grid-template-rows: repeat(2, 1fr);
   grid-column-gap: 40px;
+  align-items: center;
 }
 
 .pane-row {
   display: grid;
   grid-template-columns: max-content 1fr;
-  grid-template-rows: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
   grid-column-gap: 10px;
+  align-items: center;
 }
 
 #sun-icon-small {
@@ -85,13 +87,24 @@ button:focus {
   margin-top: 40px;
 }
 
-.btn-row {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 40px;
+.btn--center {
+  position: absolute;
+  bottom: 20px;
 }
 
-.btn {
+.btn-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.btn-row--alt {
+  display: flex;
+  justify-content: center;
+}
+
+/* .btn {
   text-transform: uppercase;
   font-weight: bold;
   padding: 10px 16px;
@@ -100,11 +113,19 @@ button:focus {
   border: none;
   border-radius: 4px;
   cursor: pointer;
-}
+} */
 
 .input {
   width: 100px;
   padding: 4px 3px;
+}
+
+#reset {
+  border: none;
+  color: rgb(191, 39, 39);
+  text-transform: none;
+  box-shadow: none;
+  font-size: 12px;
 }
 
 /* STYLES for the selectBgColor component */
@@ -112,5 +133,5 @@ button:focus {
 .sbc-colors-filler {
   background-color: #c4c4c4;
   width: 100%;
-  height: 50px;
+  height: 30px;
 }
