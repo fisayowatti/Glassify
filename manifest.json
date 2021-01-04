@@ -1,0 +1,7 @@
+{
+  "name": "Glassify",
+  "id": "927106205731735409",
+  "api": "1.0.0",
+  "main": "./dist/code.js",
+  "ui": "./dist/ui.html"
+}
