@@ -18,16 +18,12 @@ class App extends React.Component {
   lightIntensity: HTMLInputElement;
   strokeWeight: HTMLInputElement;
   blur: HTMLInputElement;
+  lightColor: HTMLInputElement;
 
   state: State = {
     lightColor: "#FFFFFF",
     bgColor: "#C4C4C4",
     lastPage: false,
-  };
-
-  countRef = (element: HTMLInputElement) => {
-    if (element) element.value = "5";
-    this.textbox = element;
   };
 
   lightIntensityRef = (element: HTMLInputElement) => {
@@ -43,6 +39,11 @@ class App extends React.Component {
   blurRef = (element: HTMLInputElement) => {
     if (element) element.value = "42";
     this.blur = element;
+  };
+
+  lightColorRef = (element: HTMLInputElement) => {
+    // if (element) element.value = this.state.lightColor;
+    this.lightColor = element;
   };
 
   onColorChange = (event) => {
@@ -126,7 +127,21 @@ class App extends React.Component {
         {!lastPage && <SelectBgColor changePage={this.changePage} />}
         {lastPage && (
           <div className="container">
-            <h1 className="heading-1">Light</h1>
+            <div id="back" onClick={this.changePage}>
+              <svg
+                width="20"
+                height="17"
+                viewBox="0 0 20 17"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M19.5859 7.25495H4.53576L9.9972 1.76072L8.5382 0.292969L0.585938 8.29297L8.5382 16.293L9.9972 14.8252L4.53576 9.33099H19.5859V7.25495Z"
+                  fill="black"
+                />
+              </svg>
+            </div>
+            <h1 className="heading-1 heading">Light</h1>
             <div className="light-row">
               {/* <div> */}
               <h2 className="heading-2">Intensity</h2>
@@ -157,20 +172,32 @@ class App extends React.Component {
               {/* </div> */}
               {/* <div> */}
               <h2 className="heading-2">Color</h2>
-              <div style={{ justifySelf: "center" }}>
+              <div
+                style={{
+                  justifySelf: "center",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
                 <input
                   type="color"
                   id="light-color"
                   name="light-color"
                   value={this.state.lightColor}
                   onChange={this.onColorChange}
+                  ref={this.lightColorRef}
                 />
-                <span id="light-color-label">{this.state.lightColor}</span>
+                <span
+                  id="light-color-label"
+                  onClick={() => this.lightColor.click()}
+                >
+                  {this.state.lightColor}
+                </span>
               </div>
               {/* </div> */}
             </div>
 
-            <h1 className="heading-1 pane">Pane</h1>
+            <h1 className="heading-1 heading">Pane</h1>
             <div className="pane-row">
               {/* <div> */}
               {/* <h2 className="heading-2">Refracted color</h2>
@@ -212,6 +239,26 @@ class App extends React.Component {
                 Glassify
               </button>
               <button id="reset" onClick={this.onReset}>
+                <svg
+                  width="18"
+                  height="17"
+                  viewBox="0 0 18 17"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M5.5 1.5C3.086 2.877 1.5 5.522 1.5 8.5C1.5 10.0823 1.96919 11.629 2.84824 12.9446C3.72729 14.2602 4.97672 15.2855 6.43853 15.891C7.90034 16.4965 9.50887 16.655 11.0607 16.3463C12.6126 16.0376 14.038 15.2757 15.1569 14.1569C16.2757 13.038 17.0376 11.6126 17.3463 10.0607C17.655 8.50887 17.4965 6.90034 16.891 5.43853C16.2855 3.97672 15.2602 2.72729 13.9446 1.84824C12.629 0.969192 11.0823 0.5 9.5 0.5"
+                    stroke="black"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M5.5 6.5V1.5H0.5"
+                    stroke="black"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
                 Reset Values
               </button>
             </div>

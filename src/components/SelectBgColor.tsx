@@ -15,6 +15,7 @@ class ColorItem extends React.Component<ColorItemProps> {
             width: "50px",
             borderRadius: "100%",
             backgroundColor: color,
+            boxShadow: "0 0 0 3px #e78267",
           }}
         ></div>
         <p>{color}</p>

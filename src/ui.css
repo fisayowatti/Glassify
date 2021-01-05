@@ -16,7 +16,9 @@ button {
 }
 #glassify {
   color: white;
+  background-color: #18a0fb;
   text-transform: uppercase;
+  box-shadow: none;
 }
 .input {
   border: none;
@@ -54,12 +56,21 @@ button:focus {
   color: #000;
 }
 
+.heading {
+  margin-top: 30px;
+}
+
 .light-row {
   display: grid;
   grid-template-columns: max-content 1fr;
   grid-template-rows: repeat(2, 1fr);
   grid-column-gap: 40px;
+  grid-row-gap: 10px;
   align-items: center;
+}
+
+#light-color-label {
+  margin-left: 10px;
 }
 
 .pane-row {
@@ -67,6 +78,7 @@ button:focus {
   grid-template-columns: max-content 1fr;
   grid-template-rows: repeat(2, 1fr);
   grid-column-gap: 10px;
+  grid-row-gap: 10px;
   align-items: center;
 }
 
@@ -83,10 +95,6 @@ button:focus {
   margin: 0 10px;
 }
 
-.pane {
-  margin-top: 40px;
-}
-
 .btn--center {
   position: absolute;
   bottom: 20px;
@@ -96,7 +104,7 @@ button:focus {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 20px;
+  margin-top: 30px;
 }
 
 .btn-row--alt {
@@ -126,6 +134,35 @@ button:focus {
   text-transform: none;
   box-shadow: none;
   font-size: 12px;
+}
+
+#back {
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  border-radius: 100%;
+  background-color: #e4e4e4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+input[type="color"] {
+  border-radius: 100%;
+  height: 30px;
+  width: 30px;
+  border: none;
+  outline: none;
+  -webkit-appearance: none;
+}
+
+input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+input[type="color"]::-webkit-color-swatch {
+  border: none;
+  border-radius: 100%;
 }
 
 /* STYLES for the selectBgColor component */
