@@ -1,6 +1,5 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import Heading from "./components/Heading";
 import SelectBgColor from "./components/SelectBgColor";
 import "./ui.css";
 
@@ -10,6 +9,10 @@ interface State {
   lightColor: string;
   bgColor: string;
   lastPage: boolean;
+
+  bgLayerSelected: boolean;
+  colorOptions: string[];
+  selectedColor: string;
 }
 
 class App extends React.Component {
@@ -19,11 +22,34 @@ class App extends React.Component {
   strokeWeight: HTMLInputElement;
   blur: HTMLInputElement;
   lightColor: HTMLInputElement;
+  bgColor: HTMLInputElement;
 
   state: State = {
     lightColor: "#FFFFFF",
     bgColor: "#C4C4C4",
     lastPage: false,
+
+    bgLayerSelected: false,
+    colorOptions: [],
+    selectedColor: "",
+  };
+
+  componentDidMount() {
+    window.onmessage = async (event) => {
+      const message = event.data.pluginMessage;
+      if (message.type === "refracted-color-options") {
+        this.setState({ colorOptions: message.colors });
+      }
+      if (message.type === "selection-made") {
+        this.setState({ bgLayerSelected: message.isValid });
+      }
+      console.log("omo", message);
+    };
+  }
+
+  selectColor = (color: string) => {
+    console.log(color);
+    this.setState({ selectedColor: color });
   };
 
   lightIntensityRef = (element: HTMLInputElement) => {
@@ -44,6 +70,11 @@ class App extends React.Component {
   lightColorRef = (element: HTMLInputElement) => {
     // if (element) element.value = this.state.lightColor;
     this.lightColor = element;
+  };
+
+  bgColorRef = (element: HTMLInputElement) => {
+    // if (element) element.value = this.state.lightColor;
+    this.bgColor = element;
   };
 
   onColorChange = (event) => {
@@ -88,7 +119,7 @@ class App extends React.Component {
   onGlassify = () => {
     const lightIntensity = parseInt(this.lightIntensity.value);
     const lightColor = this.state.lightColor;
-    const bgColor = this.state.bgColor;
+    const bgColor = this.state.selectedColor;
     const strokeWeight = parseInt(this.strokeWeight.value, 10);
     const blur = Math.min(250, parseInt(this.blur.value));
 
@@ -108,11 +139,25 @@ class App extends React.Component {
   };
 
   changePage = () => {
+    parent.postMessage(
+      {
+        pluginMessage: {
+          type: "deselect-all-selections",
+        },
+      },
+      "*"
+    );
     this.setState({ lastPage: !this.state.lastPage });
   };
 
   render() {
-    const { lastPage } = this.state;
+    const {
+      lastPage,
+      bgLayerSelected,
+      colorOptions,
+      selectedColor,
+      bgColor,
+    } = this.state;
     return (
       <div>
         {/* <img src={require("./logo.svg")} />
@@ -124,7 +169,43 @@ class App extends React.Component {
           Create
         </button>
         <button onClick={this.onCancel}>Cancel</button> */}
-        {!lastPage && <SelectBgColor changePage={this.changePage} />}
+        {!lastPage && (
+          <SelectBgColor
+            bgLayerSelected={bgLayerSelected}
+            colorOptions={colorOptions}
+            changePage={this.changePage}
+            selectColor={this.selectColor}
+            selectedColor={selectedColor}
+            defaultColor={bgColor}
+            defaultColorRef={this.bgColorRef}
+            onColorChange={this.onColorChange}
+            defaultColorElement={this.bgColor}
+            defaultColorComponent={
+              <span
+                style={{
+                  justifySelf: "center",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <input
+                  type="color"
+                  id="bg-color"
+                  name="light-color"
+                  value={this.state.bgColor}
+                  onChange={this.onColorChange}
+                  ref={this.bgColorRef}
+                />
+                <span
+                  id="light-color-label"
+                  onClick={() => this.bgColor.click()}
+                >
+                  {this.state.bgColor}
+                </span>
+              </span>
+            }
+          />
+        )}
         {lastPage && (
           <div className="container">
             <div id="back" onClick={this.changePage}>

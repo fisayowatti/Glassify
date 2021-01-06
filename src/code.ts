@@ -1,22 +1,96 @@
 
-figma.ui.onmessage = msg => {
-    if (msg.type === 'create-rectangles') {
-        const nodes = []
+// figma.ui.onmessage = msg => {
+//     if (msg.type === 'create-rectangles') {
+//         const nodes = []
 
-        for (let i = 0; i < msg.count; i++) {
-            const rect = figma.createRectangle()
-            rect.x = i * 150
-            rect.fills = [{ type: 'SOLID', color: { r: 1, g: 0.5, b: 0 } }]
-            figma.currentPage.appendChild(rect)
-            nodes.push(rect)
-        }
+//         for (let i = 0; i < msg.count; i++) {
+//             const rect = figma.createRectangle()
+//             rect.x = i * 150
+//             rect.fills = [{ type: 'SOLID', color: { r: 1, g: 0.5, b: 0 } }]
+//             figma.currentPage.appendChild(rect)
+//             nodes.push(rect)
+//         }
 
-        figma.currentPage.selection = nodes
-        figma.viewport.scrollAndZoomIntoView(nodes)
+//         figma.currentPage.selection = nodes
+//         figma.viewport.scrollAndZoomIntoView(nodes)
+//     }
+
+//     figma.closePlugin()
+// }
+
+
+
+
+// const darkenHexToRGBA = (hexColor, alpha: number) => {
+//   const rgb = hexToRGBA(hexColor);
+
+//   return {
+//     r: Math.max(0, rgb.r * 0.9),
+//     g: Math.max(0, rgb.g * 0.9),
+//     b: Math.max(0, rgb.b * 0.9),
+//     a: alpha
+//   }
+// }
+
+
+// This plugin will open a window to prompt the user to enter a number, and
+// it will then create that many rectangles on the screen.
+
+// This file holds the main code for the plugins. It has access to the *document*.
+// You can access browser APIs in the <script> tag inside "ui.html" which has a
+// full browser environment (see documentation).
+
+// This shows the HTML page in "ui.html".
+figma.showUI(__html__, { height: 490 });
+
+//When plugin launches deselect all selections
+figma.currentPage.selection = [];
+
+figma.on('selectionchange', () => {
+
+    //if there is no valid selection on selection change do nothing;
+    if (!figma.currentPage.selection[0]) return;
+
+    const bgLayerColors = getBgLayerColors(figma.currentPage.selection[0]['fills']);
+    const unNormalizedBgLayerColors = unNormalizeColors(bgLayerColors);
+    const hexBgLayerColors = unNormalizedBgLayerColors.map(color => rgbaToHex(color));
+    const uniqueColors = [...new Set(hexBgLayerColors)]
+
+    if (uniqueColors.length) {
+        figma.ui.postMessage({ type: 'selection-made', isValid: true })
+    } else {
+        figma.ui.postMessage({ type: 'selection-made', isValid: false })
     }
 
-    figma.closePlugin()
-}
+    figma.ui.postMessage({ type: 'refracted-color-options', colors: uniqueColors })
+
+    console.log(figma.currentPage.selection[0], unNormalizedBgLayerColors, hexBgLayerColors, uniqueColors)
+});
+
+figma.ui.onmessage = msg => {
+    // One way of distinguishing between different types of messages sent from
+    // your HTML page is to use an object with a "type" property like this.
+    if (msg.type === 'glassify') {
+        for (let selection of figma.currentPage.selection) {
+            glassify(selection, msg.lightIntensity, msg.lightColor, msg.bgColor, msg.strokeWeight, msg.blur);
+        }
+    }
+
+    if (msg.type === 'deselect-all-selections') {
+        figma.currentPage.selection = [];
+    }
+
+    // if (msg.type === 'undo') {
+    //     for (let selection of figma.currentPage.selection) {
+    //         undo(selection);
+    //     }
+    // }
+
+    // Make sure to close the plugin when you're done. Otherwise the plugin will
+    // keep running, which shows the cancel button at the bottom of the screen.
+    // figma.closePlugin();
+};
+
 
 
 // HELPER FUNCTIONS
@@ -169,47 +243,6 @@ const lightenHexToRGBA = (hexColor, alpha: number) => {
         a: alpha
     }
 }
-
-// const darkenHexToRGBA = (hexColor, alpha: number) => {
-//   const rgb = hexToRGBA(hexColor);
-
-//   return {
-//     r: Math.max(0, rgb.r * 0.9),
-//     g: Math.max(0, rgb.g * 0.9),
-//     b: Math.max(0, rgb.b * 0.9),
-//     a: alpha
-//   }
-// }
-
-
-// This plugin will open a window to prompt the user to enter a number, and
-// it will then create that many rectangles on the screen.
-
-// This file holds the main code for the plugins. It has access to the *document*.
-// You can access browser APIs in the <script> tag inside "ui.html" which has a
-// full browser environment (see documentation).
-
-// This shows the HTML page in "ui.html".
-figma.showUI(__html__, { height: 450 });
-
-
-figma.on('selectionchange', () => {
-    // const newNode = figma.createNodeFromSvg(figma.currentPage.selection.map(node => node.vectorPaths[0])[0].data)
-    const bgLayerColors = getBgLayerColors(figma.currentPage.selection[0]['fills']);
-    const unNormalizedBgLayerColors = unNormalizeColors(bgLayerColors);
-    const hexBgLayerColors = unNormalizedBgLayerColors.map(color => rgbaToHex(color));
-    const uniqueColors = [...new Set(hexBgLayerColors)]
-
-    if (uniqueColors.length) {
-        figma.ui.postMessage({ type: 'selection-made', isValid: true })
-    } else {
-        figma.ui.postMessage({ type: 'selection-made', isValid: false })
-    }
-
-    figma.ui.postMessage({ type: 'refracted-color-options', colors: uniqueColors })
-
-    console.log(figma.currentPage.selection[0], unNormalizedBgLayerColors, hexBgLayerColors, uniqueColors)
-});
 
 const radialTopLeftTx = [0.3572564721107483, 0.16031566262245178, 0.49201685190200806];
 const radialBottomRightTx = [-0.16012853384017944, 0.16538913547992706, 0.49651965498924255];
@@ -369,36 +402,6 @@ const glassify = (node: SceneNode, lightIntensity: number, lightColor: string, b
 //     }
 // }
 
-figma.ui.onmessage = msg => {
-    // One way of distinguishing between different types of messages sent from
-    // your HTML page is to use an object with a "type" property like this.
-    if (msg.type === 'glassify') {
-        // const nodes: SceneNode[] = [];
-        // for (let i = 0; i < msg.count; i++) {
-        //   const rect = figma.createRectangle();
-        //   rect.x = i * 150;
-        //   rect.fills = [{type: 'SOLID', color: {r: 1, g: 0.5, b: 0}}];
-        //   figma.currentPage.appendChild(rect);
-        //   nodes.push(rect);
-        // }
-        // figma.currentPage.selection = nodes;
-        // figma.viewport.scrollAndZoomIntoView(nodes);
-
-        for (let selection of figma.currentPage.selection) {
-            glassify(selection, msg.lightIntensity, msg.lightColor, msg.bgColor, msg.strokeWeight, msg.blur);
-        }
-    }
-
-    // if (msg.type === 'undo') {
-    //     for (let selection of figma.currentPage.selection) {
-    //         undo(selection);
-    //     }
-    // }
-
-    // Make sure to close the plugin when you're done. Otherwise the plugin will
-    // keep running, which shows the cancel button at the bottom of the screen.
-    // figma.closePlugin();
-};
 
 
 
