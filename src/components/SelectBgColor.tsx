@@ -56,22 +56,24 @@ class SelectBgColor extends React.Component<SelectBgColorProps> {
       <div>
         <p>
           Select the background layer of the intended glass pane and choose a
-          color from the list that comes up
+          color from the list
         </p>
         {!bgLayerSelected && <div className="sbc-colors-filler"></div>}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, 80px)",
-            justifyContent: "center",
-            justifyItems: "center",
-          }}
-        >
-          {colorOptions.length &&
-            colorOptions.map((color) => (
-              <ColorItem key={color} color={color} />
-            ))}
-        </div>
+        {bgLayerSelected && (
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, 80px)",
+              justifyContent: "center",
+              justifyItems: "center",
+            }}
+          >
+            {colorOptions.length &&
+              colorOptions.map((color) => (
+                <ColorItem key={color} color={color} />
+              ))}
+          </div>
+        )}
         <div className="btn-row--alt">
           <button className="btn--center" onClick={changePage}>
             Next

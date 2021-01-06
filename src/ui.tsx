@@ -141,6 +141,10 @@ class App extends React.Component {
                 />
               </svg>
             </div>
+            <p>
+              Select the object you want to glassify before clicking the blue
+              button.
+            </p>
             <h1 className="heading-1 heading">Light</h1>
             <div className="light-row">
               {/* <div> */}

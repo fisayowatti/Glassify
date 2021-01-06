@@ -190,7 +190,7 @@ const lightenHexToRGBA = (hexColor, alpha: number) => {
 // full browser environment (see documentation).
 
 // This shows the HTML page in "ui.html".
-figma.showUI(__html__, { height: 360 });
+figma.showUI(__html__, { height: 450 });
 
 
 figma.on('selectionchange', () => {
