@@ -177,32 +177,31 @@ class App extends React.Component {
             selectColor={this.selectColor}
             selectedColor={selectedColor}
             defaultColor={bgColor}
-            defaultColorRef={this.bgColorRef}
-            onColorChange={this.onColorChange}
-            defaultColorElement={this.bgColor}
-            defaultColorComponent={
-              <span
-                style={{
-                  justifySelf: "center",
-                  display: "flex",
-                  alignItems: "center",
-                }}
-              >
-                <input
-                  type="color"
-                  id="bg-color"
-                  name="light-color"
-                  value={this.state.bgColor}
-                  onChange={this.onColorChange}
-                  ref={this.bgColorRef}
-                />
-                <span
-                  id="light-color-label"
-                  onClick={() => this.bgColor.click()}
+            defaultColorMarkup={
+              <div style={{ display: "inline-block" }}>
+                <div
+                  style={{
+                    justifySelf: "center",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
                 >
-                  {this.state.bgColor}
-                </span>
-              </span>
+                  <input
+                    type="color"
+                    id="bg-color"
+                    name="bg-color"
+                    value={this.state.bgColor}
+                    onChange={this.onColorChange}
+                    ref={this.bgColorRef}
+                  />
+                  <span
+                    // id="light-color-label"
+                    onClick={() => this.bgColor.click()}
+                  >
+                    {this.state.bgColor}
+                  </span>
+                </div>
+              </div>
             }
           />
         )}

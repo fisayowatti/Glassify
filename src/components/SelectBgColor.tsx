@@ -4,6 +4,7 @@ interface ColorItemProps {
   color: string;
   selectColor: (color: string) => void;
   selectedColor: string;
+  deselectDefault: () => void;
 }
 
 class ColorItem extends React.Component<ColorItemProps> {
@@ -17,10 +18,15 @@ class ColorItem extends React.Component<ColorItemProps> {
     return `${defaultNames} ${additionalNames}`;
   };
   render() {
-    const { color, selectColor } = this.props;
+    const { color, selectColor, deselectDefault } = this.props;
 
     return (
-      <div onClick={() => selectColor(color)}>
+      <div
+        onClick={() => {
+          selectColor(color);
+          deselectDefault();
+        }}
+      >
         <div
           className={this.getClassName()}
           style={{ backgroundColor: color }}
@@ -38,15 +44,36 @@ interface SelectBgColorProps {
   selectColor: (color: string) => void;
   selectedColor: string;
   defaultColor: string;
-  defaultColorRef: (element: HTMLInputElement) => void;
-  defaultColorElement: HTMLInputElement;
-  onColorChange: (event) => void;
-  defaultColorComponent: JSX.Element | JSX.Element[];
+  defaultColorMarkup: JSX.Element | JSX.Element[];
 }
 
 class SelectBgColor extends React.Component<SelectBgColorProps> {
   state = {
     useDefaultColor: false,
+  };
+
+  deselectDefault = () => {
+    this.setState({ useDefaultColor: false });
+  };
+
+  onCheckboxChange = () => {
+    const { useDefaultColor } = this.state;
+    const { selectColor, defaultColor } = this.props;
+    //provide more uptodate state for useDefaultCOlor within this function
+    const udc = !useDefaultColor;
+    this.setState((prevState) => ({
+      useDefaultColor: !prevState["useDefaultColor"],
+    }));
+    if (udc) {
+      selectColor(defaultColor);
+    } else {
+      selectColor("");
+    }
+  };
+
+  //if the back button is pressed the user wont be able to progress w/o reselecting a color.
+  componentDidMount = () => {
+    this.props.selectColor("");
   };
 
   render() {
@@ -57,54 +84,31 @@ class SelectBgColor extends React.Component<SelectBgColorProps> {
       selectColor,
       selectedColor,
       defaultColor,
-      defaultColorRef,
-      onColorChange,
-      defaultColorElement,
-      defaultColorComponent,
+      defaultColorMarkup,
     } = this.props;
     const { useDefaultColor } = this.state;
     console.log("colorsyo", colorOptions);
     return (
       <div>
-        <h1>Choose the refracted color</h1>
+        <h1 className="heading-1">Choose the refracted color</h1>
         <p>
-          Select the background layer of the intended glass pane and choose a
-          color from the list
+          1. Select the layer that'll be behind the intended glass pane [We
+          expect this to be a Frame, Shape or Vector]
+          <br />
+          2. Choose a color from the list
         </p>
         {/* {!bgLayerSelected && <div className="sbc-colors-filler"></div>} */}
-        <div>
+        <div
+          style={{ display: "flex", alignItems: "center", margin: "30px 0" }}
+        >
           <input
             type="checkbox"
             checked={useDefaultColor}
-            onChange={() =>
-              this.setState({ useDefaultColor: !useDefaultColor })
-            }
+            onChange={this.onCheckboxChange}
           />
-          Nevermind, I'll use
-          {defaultColorComponent}
-          {/* <span
-            style={{
-              justifySelf: "center",
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            <input
-              type="color"
-              id="light-color"
-              //   name="light-color"
-              value={defaultColor}
-              onChange={onColorChange}
-              ref={defaultColorRef}
-            />
-            <span
-              id="light-color-label"
-              onClick={() => defaultColorElement.click()}
-            >
-              {defaultColor}
-            </span>
-          </span> */}
-          instead
+          Nevermind, I'll use &nbsp;
+          {defaultColorMarkup}
+          &nbsp; instead
         </div>
         {bgLayerSelected && (
           <div
@@ -122,6 +126,7 @@ class SelectBgColor extends React.Component<SelectBgColorProps> {
                   color={color}
                   selectColor={selectColor}
                   selectedColor={selectedColor}
+                  deselectDefault={this.deselectDefault}
                 />
               ))}
           </div>

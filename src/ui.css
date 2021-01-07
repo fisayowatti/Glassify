@@ -125,7 +125,7 @@ button:focus {
 
 #reset {
   border: none;
-  color: rgb(191, 39, 39);
+  /* color: rgb(191, 39, 39); */
   text-transform: none;
   box-shadow: none;
   font-size: 12px;
@@ -141,9 +141,9 @@ button:focus {
   width: 12px;
 }
 
-#reset > svg > path {
+/* #reset > svg > path {
   stroke: rgb(191, 39, 39);
-}
+} */
 
 #back {
   cursor: pointer;

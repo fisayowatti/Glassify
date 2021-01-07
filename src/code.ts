@@ -129,7 +129,7 @@ const getBgLayerColors = (fills) => {
             const colors = curr.gradientStops.map(stop => stop.color)
             acc = [...acc, ...colors]
         } else {
-            alert(`This feature does not work with images || selection w/o fill || you need to select a layer with at least a gradient or solid fill`)
+            figma.notify(`You need to select a layer with at least a gradient or solid fill`)
         }
         return acc;
     }, [])
@@ -381,13 +381,15 @@ const glassify = (node: SceneNode, lightIntensity: number, lightColor: string, b
     //     preGlassArray.push(preGlass);
     // }
 
-    console.log('rubbish?', desiredStrokeLightSource, desiredStrokeLighterBg, desiredStrokeDarkerBg)
+    // console.log('rubbish?', desiredStrokeLightSource, desiredStrokeLighterBg, desiredStrokeDarkerBg)
 
 
     node["fills"] = [desiredFill];
     node["strokes"] = [desiredStrokeLighterBg, desiredStrokeDarkerBg, desiredStrokeLightSource];
     node["strokeWeight"] = strokeWeight;
     node["effects"] = desiredEffects;
+
+    figma.closePlugin();
 
 }
 
