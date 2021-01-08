@@ -73,6 +73,10 @@ class SelectBgColor extends React.Component<SelectBgColorProps> {
 
   //if the back button is pressed the user wont be able to progress w/o reselecting a color.
   componentDidMount = () => {
+    parent.postMessage(
+      { pluginMessage: { type: "on-refracted-color-page" } },
+      "*"
+    );
     this.props.selectColor("");
   };
 
@@ -91,12 +95,11 @@ class SelectBgColor extends React.Component<SelectBgColorProps> {
     return (
       <div>
         <h1 className="heading-1">Choose the refracted color</h1>
-        <p>
-          1. Select the layer that'll be behind the intended glass pane [We
-          expect this to be a Frame, Shape or Vector]
+        <ul className="sbc-instructions">
+          <li>Select the layer that's behind the intended glass pane</li>
           <br />
-          2. Choose a color from the list
-        </p>
+          <li>Choose a color from the list</li>
+        </ul>
         {/* {!bgLayerSelected && <div className="sbc-colors-filler"></div>} */}
         <div
           style={{ display: "flex", alignItems: "center", margin: "30px 0" }}

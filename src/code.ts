@@ -46,31 +46,16 @@ figma.showUI(__html__, { height: 490 });
 //When plugin launches deselect all selections
 figma.currentPage.selection = [];
 
-figma.on('selectionchange', () => {
-
-    //if there is no valid selection on selection change do nothing;
-    if (!figma.currentPage.selection[0]) return;
-
-    const bgLayerColors = getBgLayerColors(figma.currentPage.selection[0]['fills']);
-    const unNormalizedBgLayerColors = unNormalizeColors(bgLayerColors);
-    const hexBgLayerColors = unNormalizedBgLayerColors.map(color => rgbaToHex(color));
-    const uniqueColors = [...new Set(hexBgLayerColors)]
-
-    if (uniqueColors.length) {
-        figma.ui.postMessage({ type: 'selection-made', isValid: true })
-    } else {
-        figma.ui.postMessage({ type: 'selection-made', isValid: false })
-    }
-
-    figma.ui.postMessage({ type: 'refracted-color-options', colors: uniqueColors })
-
-    console.log(figma.currentPage.selection[0], unNormalizedBgLayerColors, hexBgLayerColors, uniqueColors)
-});
+let page: 'refracted-color-page' | 'glassify-page' = 'refracted-color-page';
 
 figma.ui.onmessage = msg => {
     // One way of distinguishing between different types of messages sent from
     // your HTML page is to use an object with a "type" property like this.
     if (msg.type === 'glassify') {
+        if (!figma.currentPage.selection[0]) {
+            figma.notify("Please select a layer to continue")
+        }
+
         for (let selection of figma.currentPage.selection) {
             glassify(selection, msg.lightIntensity, msg.lightColor, msg.bgColor, msg.strokeWeight, msg.blur);
         }
@@ -78,6 +63,14 @@ figma.ui.onmessage = msg => {
 
     if (msg.type === 'deselect-all-selections') {
         figma.currentPage.selection = [];
+    }
+
+    if (msg.type === 'on-refracted-color-page') {
+        page = 'refracted-color-page';
+    }
+
+    if (msg.type === 'on-glassify-page') {
+        page = 'glassify-page';
     }
 
     // if (msg.type === 'undo') {
@@ -90,6 +83,70 @@ figma.ui.onmessage = msg => {
     // keep running, which shows the cancel button at the bottom of the screen.
     // figma.closePlugin();
 };
+
+let handler: NotificationHandler;
+
+figma.on('selectionchange', () => {
+
+    if (page == 'refracted-color-page') {
+        console.log('page', page, figma.currentPage.selection[0])
+
+
+        //if there is no valid selection on selection change do nothing;
+        if (!figma.currentPage.selection[0]) return;
+
+        if (
+            !figma.currentPage.selection[0]['fills'] ||
+            (
+                !figma.currentPage.selection[0]['fills'].some(fill => fill.type === 'SOLID') &&
+                !figma.currentPage.selection[0]['fills'].some(fill => fill.type.startsWith('GRADIENT'))
+            )
+        ) {
+            //notify the user of the invalid selection
+            handler = figma.notify(`Please select a layer that's not a group and has at least 1 solid or gradient fill`);
+            //deselect the invalid selection
+            figma.currentPage.selection = [];
+            //do not continue with any other operation
+            return;
+        }
+
+        //if all exceptions are passed, cancel any notification that may be active before proceeding
+        if (handler) handler.cancel();
+
+        const bgLayerColors = getBgLayerColors(figma.currentPage.selection[0]['fills']);
+        const unNormalizedBgLayerColors = unNormalizeColors(bgLayerColors);
+        const hexBgLayerColors = unNormalizedBgLayerColors.map(color => rgbaToHex(color));
+        const uniqueColors = [...new Set(hexBgLayerColors)]
+
+        if (uniqueColors.length) {
+            figma.ui.postMessage({ type: 'selection-made', isValid: true })
+        } else {
+            figma.ui.postMessage({ type: 'selection-made', isValid: false })
+        }
+
+        figma.ui.postMessage({ type: 'refracted-color-options', colors: uniqueColors })
+
+        console.log(figma.currentPage.selection[0], unNormalizedBgLayerColors, hexBgLayerColors, uniqueColors)
+    }
+
+    if (page === 'glassify-page') {
+        console.log('page', page, figma.currentPage.selection.map(sel => sel.type))
+
+        //if there is no valid selection on selection change do nothing;
+        if (!figma.currentPage.selection[0]) return;
+
+        if (figma.currentPage.selection.some(sel => sel.type == "COMPONENT" || sel.type == "COMPONENT_SET" || sel.type == "INSTANCE" || sel.type == "GROUP")) {
+            //notify the user of the invalid selection(s)
+            handler = figma.notify("For groups or components, you should target any or all of their children instead")
+            //deselect the invalid selection(s)
+            figma.currentPage.selection = figma.currentPage.selection.filter(sel => sel.type !== "COMPONENT" && sel.type !== "COMPONENT_SET" && sel.type !== "INSTANCE" && sel.type !== "GROUP")
+        }
+
+    }
+
+    // console.log(figma.currentPage.selection[0]['fills'])
+
+});
 
 
 
@@ -201,6 +258,10 @@ const base10to16 = (num: number) => {
                 return remainder.toString();
         }
     })
+
+    if (num === 0) {
+        return "00"
+    }
 
     return remainderArr.reverse().reduce((acc, curr) => acc + curr, "")
 }
