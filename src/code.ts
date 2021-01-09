@@ -185,8 +185,6 @@ const getBgLayerColors = (fills) => {
         } else if (curr.type.startsWith('GRADIENT')) {
             const colors = curr.gradientStops.map(stop => stop.color)
             acc = [...acc, ...colors]
-        } else {
-            figma.notify(`You need to select a layer with at least a gradient or solid fill`)
         }
         return acc;
     }, [])
