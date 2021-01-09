@@ -121,8 +121,8 @@ class App extends React.Component {
     const lightIntensity = parseInt(this.lightIntensity.value);
     const lightColor = this.state.lightColor;
     const bgColor = this.state.selectedColor;
-    const strokeWeight = parseInt(this.strokeWeight.value, 10);
-    const blur = Math.min(250, parseInt(this.blur.value));
+    const strokeWeight = Math.min(1000, parseInt(this.strokeWeight.value, 10));
+    const blur = Math.min(250, parseInt(this.blur.value, 10));
 
     parent.postMessage(
       {
