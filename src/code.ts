@@ -48,12 +48,14 @@ figma.currentPage.selection = [];
 
 let page: 'refracted-color-page' | 'glassify-page' = 'refracted-color-page';
 
+let handler: NotificationHandler;
+
 figma.ui.onmessage = msg => {
     // One way of distinguishing between different types of messages sent from
     // your HTML page is to use an object with a "type" property like this.
     if (msg.type === 'glassify') {
         if (!figma.currentPage.selection[0]) {
-            figma.notify("Please select a layer to continue")
+            handler = figma.notify("Please select a layer to continue")
         }
 
         for (let selection of figma.currentPage.selection) {
@@ -83,8 +85,6 @@ figma.ui.onmessage = msg => {
     // keep running, which shows the cancel button at the bottom of the screen.
     // figma.closePlugin();
 };
-
-let handler: NotificationHandler;
 
 figma.on('selectionchange', () => {
 
@@ -141,6 +141,9 @@ figma.on('selectionchange', () => {
             //deselect the invalid selection(s)
             figma.currentPage.selection = figma.currentPage.selection.filter(sel => sel.type !== "COMPONENT" && sel.type !== "COMPONENT_SET" && sel.type !== "INSTANCE" && sel.type !== "GROUP")
         }
+
+        //if all exceptions are passed, cancel any notification that may be active before proceeding
+        if (handler) handler.cancel();
 
     }
 
