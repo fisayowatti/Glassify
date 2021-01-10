@@ -44,12 +44,10 @@ class App extends React.Component {
       if (message.type === "selection-made") {
         this.setState({ bgLayerSelected: message.isValid });
       }
-      console.log("omo", message);
     };
   }
 
   selectColor = (color: string) => {
-    console.log(color);
     this.setState({ selectedColor: color });
   };
 
@@ -80,7 +78,6 @@ class App extends React.Component {
 
   onColorChange = (event) => {
     const { id, value }: { id: string; value: string } = event.target;
-    console.log(id, value);
 
     switch (id) {
       case "bg-color":

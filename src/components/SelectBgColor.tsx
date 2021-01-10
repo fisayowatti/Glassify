@@ -91,7 +91,6 @@ class SelectBgColor extends React.Component<SelectBgColorProps> {
       defaultColorMarkup,
     } = this.props;
     const { useDefaultColor } = this.state;
-    console.log("colorsyo", colorOptions);
     return (
       <div>
         <h1 className="heading-1">Choose the refracted color</h1>

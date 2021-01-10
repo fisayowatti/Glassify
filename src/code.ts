@@ -1,38 +1,3 @@
-
-// figma.ui.onmessage = msg => {
-//     if (msg.type === 'create-rectangles') {
-//         const nodes = []
-
-//         for (let i = 0; i < msg.count; i++) {
-//             const rect = figma.createRectangle()
-//             rect.x = i * 150
-//             rect.fills = [{ type: 'SOLID', color: { r: 1, g: 0.5, b: 0 } }]
-//             figma.currentPage.appendChild(rect)
-//             nodes.push(rect)
-//         }
-
-//         figma.currentPage.selection = nodes
-//         figma.viewport.scrollAndZoomIntoView(nodes)
-//     }
-
-//     figma.closePlugin()
-// }
-
-
-
-
-// const darkenHexToRGBA = (hexColor, alpha: number) => {
-//   const rgb = hexToRGBA(hexColor);
-
-//   return {
-//     r: Math.max(0, rgb.r * 0.9),
-//     g: Math.max(0, rgb.g * 0.9),
-//     b: Math.max(0, rgb.b * 0.9),
-//     a: alpha
-//   }
-// }
-
-
 // This plugin will open a window to prompt the user to enter a number, and
 // it will then create that many rectangles on the screen.
 
@@ -74,23 +39,11 @@ figma.ui.onmessage = msg => {
     if (msg.type === 'on-glassify-page') {
         page = 'glassify-page';
     }
-
-    // if (msg.type === 'undo') {
-    //     for (let selection of figma.currentPage.selection) {
-    //         undo(selection);
-    //     }
-    // }
-
-    // Make sure to close the plugin when you're done. Otherwise the plugin will
-    // keep running, which shows the cancel button at the bottom of the screen.
-    // figma.closePlugin();
 };
 
 figma.on('selectionchange', () => {
 
     if (page == 'refracted-color-page') {
-        console.log('page', page, figma.currentPage.selection[0])
-
 
         //if there is no valid selection on selection change do nothing;
         if (!figma.currentPage.selection[0]) return;
@@ -125,12 +78,9 @@ figma.on('selectionchange', () => {
         }
 
         figma.ui.postMessage({ type: 'refracted-color-options', colors: uniqueColors })
-
-        console.log(figma.currentPage.selection[0], unNormalizedBgLayerColors, hexBgLayerColors, uniqueColors)
     }
 
     if (page === 'glassify-page') {
-        console.log('page', page, figma.currentPage.selection.map(sel => sel.type))
 
         //if there is no valid selection on selection change do nothing;
         if (!figma.currentPage.selection[0]) return;
@@ -146,9 +96,6 @@ figma.on('selectionchange', () => {
         if (handler) handler.cancel();
 
     }
-
-    // console.log(figma.currentPage.selection[0]['fills'])
-
 });
 
 
@@ -275,8 +222,6 @@ const hexToRGBA = (hex, alpha = 0) => {
     const redChannel = base16to10(redHex);
     const greenChannel = base16to10(greenHex);
     const blueChannel = base16to10(blueHex);
-
-    console.log('huha', redChannel, greenChannel, blueChannel)
 
     return {
         r: redChannel / 255,
@@ -427,25 +372,6 @@ const glassify = (node: SceneNode, lightIntensity: number, lightColor: string, b
 
     desiredEffects.find(effect => effect.type === "BACKGROUND_BLUR").radius = blur;
 
-    // const preGlass = {
-    //     id: node.id,
-    //     fills: node["fills"],
-    //     strokes: node["strokes"],
-    //     strokeWeight: node["strokeWeight"],
-    //     effects: node["effects"]
-    // }
-
-    // const hasBeenAddedIndex = preGlassArray.findIndex(preGlass => preGlass.id === node.id)
-
-    // if (hasBeenAddedIndex >= 0) {
-    //     preGlassArray[hasBeenAddedIndex] = preGlass;
-    // } else {
-    //     preGlassArray.push(preGlass);
-    // }
-
-    // console.log('rubbish?', desiredStrokeLightSource, desiredStrokeLighterBg, desiredStrokeDarkerBg)
-
-
     node["fills"] = [desiredFill];
     node["strokes"] = [desiredStrokeLighterBg, desiredStrokeDarkerBg, desiredStrokeLightSource];
     node["strokeWeight"] = strokeWeight;
@@ -454,18 +380,6 @@ const glassify = (node: SceneNode, lightIntensity: number, lightColor: string, b
     figma.closePlugin();
 
 }
-
-// const undo = (node: SceneNode) => {
-//     const preGlass = preGlassArray.find(preGlass => preGlass.id === node.id);
-
-//     if (preGlass) {
-//         node["fills"] = preGlass.fills;
-//         node["strokes"] = preGlass.strokes;
-//         node["strokeWeight"] = preGlass.strokeWeight;
-//         node["effects"] = preGlass.effects;
-//     }
-// }
-
 
 
 
